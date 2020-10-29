@@ -20,21 +20,30 @@ class SpeedometerView @JvmOverloads constructor(
     defStyleRes: Int = 0
 ) : View(context, attributeSet, defStyleAttr, defStyleRes) {
 
-    private companion object {
-        const val VIEW_STATE_KEY = "state"
-        const val SUPER_STATE = "super_state"
-    }
-
     private var size = 320
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
 
-    private var angleDeg = 125
+    var speed = 20
+    private var angleDeg = convertSpeedIntoDegrees(speed)
+
     private var needleColor = Color.WHITE
     private var needleWidth = 5.0f
 
-    fun changeAngle(angle: Int) {
-        this.angleDeg = angle
-        invalidate()
+    private var minSpeed = 20
+    private var maxSpeed = 300
+
+    fun changeSpeed(speed: Int) {
+        this.angleDeg = convertSpeedIntoDegrees(speed)
+        if (speed in minSpeed..maxSpeed) {
+            invalidate()
+        }
+    }
+
+    private fun convertSpeedIntoDegrees(speed: Int): Int {
+        var angleFromSpeed = 0
+        if (speed in 20..249) angleFromSpeed =
+            speed + 109 else if (speed in 250..300) angleFromSpeed = speed - 251
+        return angleFromSpeed
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -57,34 +66,30 @@ class SpeedometerView @JvmOverloads constructor(
         }
     }
 
-    @SuppressLint("DrawAllocation")
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         val radius = size / 3f
 
         this.setBackgroundResource(R.drawable.speedometer)
 
-
-
-
         paint.color = needleColor
         paint.style = Paint.Style.FILL
         paint.strokeWidth = needleWidth
 
-
         val angleRad = angleDeg * PI / 180
-        val endLinePositionX = size / 2f + radius * cos(angleRad).toFloat()
-        val endLinePositionY = size / 2f + radius * sin(angleRad).toFloat()
+        val centerPosition = size / 2f
+        val endLinePositionX = centerPosition + radius * cos(angleRad).toFloat()
+        val endLinePositionY = centerPosition + radius * sin(angleRad).toFloat()
 
         canvas.drawLine(
-            size / 2f,
-            size / 2f,
+            centerPosition,
+            centerPosition,
             endLinePositionX,
             endLinePositionY,
             paint
         )
 
-        canvas.drawCircle(size / 2f, size / 2f, radius / 12, paint)
+        canvas.drawCircle(centerPosition, centerPosition, radius / 12, paint)
     }
 
 
