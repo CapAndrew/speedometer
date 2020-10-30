@@ -22,7 +22,7 @@ class SpeedometerFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         accelerate.setOnClickListener {
-            increaseSpeed(speed++)
+            increaseSpeed(Integer.parseInt(inputSpeed.text.toString()))
         }
 
         accelerateBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -42,6 +42,7 @@ class SpeedometerFragment : Fragment() {
     }
 
     private fun increaseSpeed(int: Int) {
+        speedometer.changeSpeed(int)
         speedometer2.changeSpeed(int)
     }
 
